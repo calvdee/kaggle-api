@@ -568,6 +568,7 @@ class KaggleApi(KaggleApi):
                                     competition=None,
                                     competition_opt=None,
                                     csv_display=False,
+                                    csv_stream=None,
                                     quiet=False):
         """ wrapper to competition_submission, will return either json or csv
             to the user. Additional parameters are listed below, see
@@ -597,7 +598,10 @@ class KaggleApi(KaggleApi):
             if submissions:
                 if csv_display:
                     self.print_csv(submissions, fields)
+                elif csv_stream:
+                    self.print_csv(submissions, fields, csv_stream)
                 else:
+                    print('C')
                     self.print_table(submissions, fields)
             else:
                 print('No submissions found')
@@ -2227,7 +2231,7 @@ class KaggleApi(KaggleApi):
             except UnicodeEncodeError:
                 print(row_format.format(*i_fields).encode('utf-8'))
 
-    def print_csv(self, items, fields):
+    def print_csv(self, items, fields, stream=sys.stdout):
         """ print a set of fields in a set of items using a csv.writer
 
             Parameters
@@ -2235,7 +2239,7 @@ class KaggleApi(KaggleApi):
             items: a list of items to print
             fields: a list of fields to select from items
         """
-        writer = csv.writer(sys.stdout)
+        writer = csv.writer(stream)
         writer.writerow(fields)
         for i in items:
             i_fields = [self.string(getattr(i, f)) for f in fields]
